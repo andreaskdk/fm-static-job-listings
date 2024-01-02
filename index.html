@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;700&display=swap');
+  </style>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            lightgrayishcyanbackground: 'hsl(180, 52%, 96%)',
+            lightgrayishcyanfilter: 'hsl(180, 31%, 95%)',
+            darkgrayishcyan: 'hsl(180, 8%, 52%)',
+            verydarkgrayishcyan: 'hsl(180, 14%, 20%)',
+            desaturateddarkcyan: 'hsl(180, 29%, 50%)'
+          },
+          fontFamily: {
+            leaguespartan: ['League Spartan', 'sans-serif']
+          },
+          backgroundImage: {
+            'desktop-pattern': "url('/images/bg-header-desktop.svg')",
+            'mobile-pattern': "url('/images/bg-header-mobile.svg')",
+          },
+          height: {
+            "156px": "156px",
+          }
+        }
+      }
+    }
+  </script>
+
+  <title>Frontend Mentor | Job Listings</title>
+
+  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+  <style>
+    .attribution { font-size: 11px; text-align: center; }
+    .attribution a { color: hsl(228, 45%, 44%); }
+  </style>
+</head>
+<body class="bg-lightgrayishcyanbackground">
+<header class="bg-desaturateddarkcyan bg-mobile-pattern h-156px">
+</header>
+
+
+
+<main id="app" >
+  <section v-if="this.filters.length>0">
+    <div class="bg-white m-4">
+      <div v-for="filter in filters" class="border-2 border-black" v-on:click="this.filters.splice(this.filters.indexOf(filter), 1)">{{filter}}</div>
+    </div>
+  </section>
+  <div>
+    <div v-for="data in filtered" class="bg-white m-4" >
+      <img :src="data.logo" alt="logo" class="w-12 h-12 ">
+      <h2>{{data.company}}</h2>
+      <h3>{{data.position}}</h3>
+      <h4>{{data.postedAt}} &#x2022 {{data.contract}} &#x2022 {{data.location}}</h4>
+      <div class="border-t-2 border-black flex">
+        <div v-for="filter in data.tools" class="border-2 border-black" v-on:click="this.addToFilter(filter)">{{filter}}</div>
+        <div v-for="filter in data.languages" class="border-2 border-black" v-on:click="this.addToFilter(filter)">{{filter}}</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script type="module" >
+
+  import json from './data.json' assert { type: "json" };
+  const app = {
+    data() {
+      return {
+        jobs: json,
+        filters: []
+      }
+    },
+    computed: {
+      filtered() {
+        if (this.filters.length == 0) {
+          return this.jobs
+        }
+        return this.jobs.filter(job => job.id%2==0 ? true: false)
+      }
+    },
+    methods: {
+      addToFilter(filter) {
+        this.filters.push(filter)
+      }
+    }
+  }
+
+  Vue.createApp(app).mount('#app');
+</script>
+
+
+  
+  <div class="attribution">
+    Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>. 
+    Coded by <a href="#">Andreas Koch</a>.
+  </div>
+</body>
+</html>
