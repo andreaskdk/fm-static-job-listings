@@ -30,6 +30,9 @@
           },
           height: {
             "156px": "156px",
+          },
+          fontSize: {
+            "xxs": "0.85rem",
           }
         }
       }
@@ -51,20 +54,29 @@
 
 
 <main id="app" >
-  <section v-if="this.filters.length>0">
-    <div class="bg-white m-4">
-      <div v-for="filter in filters" class="border-2 border-black" v-on:click="this.filters.splice(this.filters.indexOf(filter), 1)">{{filter}}</div>
+  <section v-if="this.filters.length>0" class="max-w-md min-w-80 justify-center mx-auto -mt-14">
+    <div class="bg-white m-8 flex p-4">
+      <div class="mr-auto mb-auto flex-row flex flex-wrap gap-4">
+        <div v-for="filter in filters" class="flex flex-row bg-lightgrayishcyanfilter text-desaturateddarkcyan font-bold rounded-lg" v-on:click="this.filters.splice(this.filters.indexOf(filter), 1)">
+          <div class="h-6 p-1">{{filter}}</div><img v-on:click="removeFilter(filter)" src="images/icon-remove.svg" alt="remove filter" class="bg-desaturateddarkcyan w-8 h-8 p-2" /></div>
+      </div>
+      <div class="font-bold text-darkgrayishcyan text-xs p-4 content-center my-auto" v-on:click="this.filters=[]">Clear</div>
     </div>
   </section>
-  <div>
-    <div v-for="data in filtered" class="bg-white m-4" >
-      <img :src="data.logo" alt="logo" class="w-12 h-12 ">
-      <h2>{{data.company}}</h2>
-      <h3>{{data.position}}</h3>
-      <h4>{{data.postedAt}} &#x2022 {{data.contract}} &#x2022 {{data.location}}</h4>
-      <div class="border-t-2 border-black flex">
-        <div v-for="filter in data.tools" class="border-2 border-black" v-on:click="this.addToFilter(filter)">{{filter}}</div>
-        <div v-for="filter in data.languages" class="border-2 border-black" v-on:click="this.addToFilter(filter)">{{filter}}</div>
+
+  <div class="max-w-md min-w-80 justify-center mx-auto ">
+    <div v-for="data in filtered" class="drop-shadow-xl bg-white m-8 py-2 px-4 border-l-4 rounded-lg" v-bind:class="{'border-desaturateddarkcyan': data.featured}" >
+      <img :src="data.logo" alt="logo" class="w-12 h-12 relative -top-8">
+      <div class="flex -mt-6">
+        <div class="font-bold text-desaturateddarkcyan text-xs p-1">{{data.company}}</div>
+        <div v-if="data.new" class="rounded-full bg-desaturateddarkcyan text-white font-bold text-xs p-1 px-2 mx-2">NEW!</div>
+        <div v-if="data.featured" class="rounded-full bg-black text-white font-bold text-xs p-1 px-2">FEATURED</div>
+      </div>
+      <h3 class="font-bold text-xs mx-1 mb-2 mt-3">{{data.position}}</h3>
+      <h4 class="text-darkgrayishcyan text-xxs font-medium p-1">{{data.postedAt}} &nbsp;&#x2022;&nbsp {{data.contract}} &nbsp;&#x2022;&nbsp {{data.location}}</h4>
+      <div class="border-t-2 border-solid border-darkgrayishcyan flex my-2 py-3">
+        <div v-for="filter in data.tools" class="border-0 bg-lightgrayishcyanfilter p-2 mx-2 font-bold text-desaturateddarkcyan text-xs" v-on:click="this.addToFilter(filter)">{{filter}}</div>
+        <div v-for="filter in data.languages" class="border-0 bg-lightgrayishcyanfilter p-2 mx-2 font-bold text-desaturateddarkcyan text-xs" v-on:click="this.addToFilter(filter)">{{filter}}</div>
       </div>
     </div>
   </div>
@@ -84,14 +96,28 @@
       filtered() {
         if (this.filters.length == 0) {
           return this.jobs
+        } else {
+          return this.jobs.filter(job => {
+            let infilter=false
+            this.filters.forEach(filter => {
+              if (job.tools.includes(filter) || job.languages.includes(filter)) {
+                infilter=true
+              }
+            })
+            return infilter;
+          })
         }
-        return this.jobs.filter(job => job.id%2==0 ? true: false)
       }
     },
     methods: {
       addToFilter(filter) {
-        this.filters.push(filter)
-      }
+        if (!this.filters.includes(filter)) {
+          this.filters.push(filter);
+        }
+      },
+        removeFilter(filter) {
+            this.filters.splice(this.filters.indexOf(filter), 1)
+        }
     }
   }
 
